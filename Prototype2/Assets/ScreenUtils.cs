@@ -19,7 +19,7 @@ public static class ScreenUtils
         {
             Vector2 max = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0));
             max.x -= 0.5f; // Adjust this value to fit your object's size
-            max.y -= 0.5f; // Adjust this value to fit your object's size
+            max.y -= 1.5f; // Adjust this value to fit your object's size
             return max;
         }
     }
