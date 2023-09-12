@@ -21,4 +21,6 @@ public class MouseFollow : MonoBehaviour
         // Move the object towards the clamped mouse position.
         transform.position = Vector3.MoveTowards(transform.position, clampedPosition, moveSpeed * Time.deltaTime);
     }
+
+
 }
