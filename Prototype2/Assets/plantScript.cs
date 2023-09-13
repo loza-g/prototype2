@@ -4,87 +4,90 @@ using UnityEngine;
 
 public class plantScript : MonoBehaviour
 {
-    private SpriteRenderer _spriteRenderer;
-    public float resetDelay = 4f; // Time in seconds before resetting the color.
-    private Color originalColor;
+    public GameObject fire;
+    public GameObject flower;
+    public AudioSource audioPlayer;
+
+    public float minInterval = 2.0f;
+    public float maxInterval = 7.0f;
     public float minDelay = 2f;
     public float maxDelay = 5f;
+    public float dyingPlantTime = 2.0f;
 
-    public float waitTime = 3.0f;
-
-    public int lives = 3;
-  
-    private Camera mainCamera;
-
+    public float minSpawnX = -5f; // Minimum X coordinate for spawning
+    public float maxSpawnX = 5f;  // Maximum X coordinate for spawning
+    public float minSpawnY = -3f; // Minimum Y coordinate for spawning
+    public float maxSpawnY = 3f;  // Maximum Y coordinate for spawning
 
     private void Start()
     {
-        mainCamera = Camera.main;
-        _spriteRenderer = GetComponent<SpriteRenderer>();
-        originalColor = _spriteRenderer.color;
-        //start pop up sequence
-        InvokeRepeating("PopUp", Random.Range(minDelay, maxDelay), Random.Range(minDelay, maxDelay));
-
+        StartCoroutine(RandomDyingPlant());
 
     }
+
+    private IEnumerator RandomDyingPlant()
+    {
+        // Start the coroutine to randomly toggle the fire image
+
+        while (true)
+        {
+            // Disable the fire image (hide it)
+            fire.SetActive(false);
+
+            // Wait for a random time interval
+            float randomInterval = Random.Range(minInterval, maxInterval);
+            yield return new WaitForSeconds(randomInterval);
+
+            // Calculate a random spawn position within the specified range
+            float randomX = Random.Range(minSpawnX, maxSpawnX);
+            float randomY = Random.Range(minSpawnY, maxSpawnY);
+
+            // Set the object's position to the random spawn position
+            Vector3 spawnPosition = new Vector3(randomX, randomY, 0f);
+            flower.transform.position = spawnPosition;
+            fire.transform.position = spawnPosition;
+            // Enable the fire image (make it appear)
+            fire.SetActive(true);
+
+
+            //// Wait 2 seconds
+            yield return new WaitForSeconds(dyingPlantTime);
+
+            if (fire.activeSelf)
+            {
+                PlayerLives Lives = FindObjectOfType<PlayerLives>();
+
+                if (Lives != null)
+                {
+                    Lives.LoseLife();
+                    if(Lives.getCurrLives() <= 0)
+                    {
+                        yield break;
+                    }
+                }
+            }
+
+            // Disable the fire image again 
+            fire.SetActive(false);
+
+            // Wait for another random time interval before the next appearance
+            randomInterval = Random.Range(minInterval, maxInterval);
+            yield return new WaitForSeconds(randomInterval);
+     
+            
+        }
+    }
+
     //when character collides with dryplant 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player") && _spriteRenderer.color == originalColor)
+        if (collision.gameObject.CompareTag("Player") && fire.activeSelf)
         {
-            _spriteRenderer.color = Color.green;
-        }
-
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        Invoke("DryPlant", resetDelay);
-    }
-
-    private void DryPlant()
-    {
-        _spriteRenderer.color = originalColor;
-
-
-    }
-
-    private void Update()
-    {
-        if(_spriteRenderer.color == originalColor)
-        {
-            Invoke("deadPlant", waitTime);
-        }
-
-    }
-
-    private void deadPlant()
-    {
-        lives -= 1;
-
-        if(lives == 0)
-        {
-            Debug.Log("No more lives");
+            audioPlayer.Play();
+            
+            //fake water plant here and return flower back to original color
+            fire.SetActive(false);
         }
     }
 
-    private void PopUp()
-    {
-        float randomX = Random.Range(0f, Screen.width);
-        float randomY = Random.Range(0f, Screen.height);
-        Vector3 randomScreenPosition = new Vector3(randomX, randomY, 10f); // Z position is 10 to appear in front of the camera
-
-        Vector3 randomWorldPosition = mainCamera.ScreenToWorldPoint(randomScreenPosition);
-
-        _spriteRenderer.transform.position = randomWorldPosition;
-
-        Invoke("ResetPosition", 2f);
-
     }
-
-    private void ResetPosition()
-    {
-        _spriteRenderer.transform.position = Vector3.zero;
-    }
-
-}
