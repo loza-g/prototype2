@@ -46,6 +46,7 @@ public class plantScript : MonoBehaviour
             Vector3 spawnPosition = new Vector3(randomX, randomY, 0f);
             flower.transform.position = spawnPosition;
             fire.transform.position = spawnPosition;
+
             // Enable the fire image (make it appear)
             fire.SetActive(true);
 
