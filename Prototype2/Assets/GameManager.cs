@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             // Reset the game by reloading the current scene
+            Time.timeScale = 1f; // Set time scale to normal (unpause)
             Scene currentScene = SceneManager.GetActiveScene();
             SceneManager.LoadScene(currentScene.buildIndex);
         }
