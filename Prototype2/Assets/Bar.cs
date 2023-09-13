@@ -7,6 +7,7 @@ public class Bar : MonoBehaviour
 {
     // Start is called before the first frame update
     public GameObject bar;
+    public GameObject WIN;
     public int time;
 
     void Start()
@@ -22,6 +23,13 @@ public class Bar : MonoBehaviour
 
     public void AnimateBar()
     {
-        LeanTween.scaleX(bar, 1, time);
+        LeanTween.scaleX(bar, 1, time).setOnComplete(ShowYouWinImage);
+    }
+
+    void ShowYouWinImage()
+    {
+        // Activate the "You Win" image to make it visible.
+        WIN.SetActive(true);
+        Time.timeScale = 0;
     }
 }
